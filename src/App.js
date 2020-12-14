@@ -4,18 +4,19 @@ import {
   Switch,
   Route
 } from 'react-router-dom'
-import ContactForm from './components/ContactForm/ContactForm';
-import Information from './components/Information/Information';
+import Information from './components/Blog/Blog';
+import Post from './components/Form/Post';
+import Blog from './components/Blog/Blog';
 
 function App() {
   return (
     <Router>
       <Switch>
         <Route exact path="/">
-          <ContactForm />
+          <Post/>
         </Route>
-        <Route path="/info">
-          <Information />
+        <Route path="/blog">
+          <Blog/>
         </Route>
       </Switch>
     </Router>

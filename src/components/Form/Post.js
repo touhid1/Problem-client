@@ -1,40 +1,66 @@
-import Axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect } from 'react-redux'
-import { useHistory } from 'react-router-dom';
-import swal from 'sweetalert';
+import { useHistory, useLocation } from 'react-router-dom';
 import { postFormData } from '../../redux/actions/formAction'
 import Preloader from '../Preloader/Preloader';
-import './ContactForm.css'
+import './Post.css'
 import uploadIcon from '../.././Images/cloud-upload-outline 1.png';
+import swal from 'sweetalert';
 
-const ContactForm = ({ postFormData }) => {
-    const { register, handleSubmit, errors } = useForm();
+const Post = () => {
+    const { register, handleSubmit } = useForm();
     let history = useHistory();
+    const [file, setFile] = useState(null); 
     const [isDisabled, setIsDisabled] = useState(false)
     const [preloader, setPreloader] = useState(false)
+  
+   
 
     const onSubmit = (data, e) => {
-        Axios.post('http://localhost:5000/formData', data)
-            .then(resData => {
-                if (resData.data.success) {
+        const formData = new FormData();
+        const image = JSON.stringify(data.image)
+        formData.append('title', data.title);
+        formData.append('file', file);
+        formData.append('image', image);
+        formData.append('message', data.message);
+        formData.append('author', data.author);
+        fetch('http://localhost:5000/formData', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(result => {
+
+                if (result) {
                     setPreloader(true)
-                    swal('success', `${resData.data.message}`, 'success')
+                    swal('success', `${result.data.message}`, 'success')
                     postFormData(data);
-                    history.push('/info');
+                    history.push('/blog');
                     setIsDisabled(true)
                     e.target.reset()
+
                 }
+
+                // console.log(result);
             })
-            .catch(error => {
+            .catch(err => {
                 setPreloader(false)
-                swal('Error', `${error}`, 'error');
+                swal('Err', `${err}`, 'err');
                 setIsDisabled(false)
             })
+        // console.log(formData);
+        // data.preventDefault();
         setPreloader(true)
-    };
 
+    }
+
+   
+
+ const fileChange = (e) => {
+        const newFile = e.target.files[0];
+        setFile(newFile);
+    }
     return (
         <div className='contact-form-area'>
             {
@@ -71,10 +97,10 @@ const ContactForm = ({ postFormData }) => {
                                 ref={register({ required: true, maxLength: 80 })}
                                 required/>
                         <label className='font-weight-bold'></label>
-                        <input type="file" name="file" id="upload-file"
+                        <input type="file" name="image" onChange={fileChange} id="upload-file"
                                                         ref={register({ required: true, maxLength: 80 })}                                                        required/>
                         <label className='btn btn-warning form-control ml-1' id="upload-label" htmlFor="upload-file" title='Upload image'><img style={{height: '30px'}} src={uploadIcon} alt=""/> <span className='image-upload'>Upload image</span></label>
-                            <input
+                            <input 
                                 type="submit"
                                 className="btn btn-success border rounded-pill px-5 py-3 d-block mx-auto"
                                 value='Submit'
@@ -85,7 +111,8 @@ const ContactForm = ({ postFormData }) => {
                 </div>
             </div >
         </div>
-    );
+    )
 };
 
-export default connect(null, { postFormData })(ContactForm);
+
+export default Post;
