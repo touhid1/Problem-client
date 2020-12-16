@@ -4,7 +4,6 @@ import {
   Switch,
   Route
 } from 'react-router-dom'
-import Information from './components/Blog/Blog';
 import Post from './components/Form/Post';
 import Blog from './components/Blog/Blog';
 

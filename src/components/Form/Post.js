@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { connect } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom';
-import { postFormData } from '../../redux/actions/formAction'
+import { DeleteFormData, UpdateFormData } from '../../Redux/actions/Action'
 import Preloader from '../Preloader/Preloader';
 import './Post.css'
 import uploadIcon from '../.././Images/cloud-upload-outline 1.png';
 import swal from 'sweetalert';
+import Axios from 'axios';
 
 const Post = () => {
     const { register, handleSubmit } = useForm();
@@ -25,24 +25,21 @@ const Post = () => {
         formData.append('image', image);
         formData.append('message', data.message);
         formData.append('author', data.author);
-        fetch('http://localhost:5000/formData', {
-            method: 'POST',
-            body: formData
-        })
-            .then(res => res.json())
-            .then(result => {
+        Axios.post('http://localhost:5000/formData',formData)
+            .then(res => {
 
-                if (result) {
+                if (res.data) {
                     setPreloader(true)
-                    swal('success', `${result.data.message}`, 'success')
-                    postFormData(data);
+                    swal('success', `${res.data}`, 'success')
+                    UpdateFormData(data);
+                    DeleteFormData(data);
                     history.push('/blog');
                     setIsDisabled(true)
                     e.target.reset()
 
                 }
 
-                // console.log(result);
+                console.log(res);
             })
             .catch(err => {
                 setPreloader(false)
