@@ -17,7 +17,7 @@ const Post = () => {
   
    
 
-    const onSubmit = (data, e) => {
+    const onSubmit = (data,e) => {
         const formData = new FormData();
         const image = JSON.stringify(data.image)
         formData.append('title', data.title);
@@ -25,12 +25,17 @@ const Post = () => {
         formData.append('image', image);
         formData.append('message', data.message);
         formData.append('author', data.author);
-        Axios.post('http://localhost:5000/formData',formData)
+        fetch('http://localhost:5000/formData', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+
             .then(res => {
 
                 if (res.data) {
                     setPreloader(true)
-                    swal('success', `${res.data}`, 'success')
+                    swal('success', `${res.data.message}`, 'success')
                     UpdateFormData(data);
                     DeleteFormData(data);
                     history.push('/blog');
